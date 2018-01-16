@@ -34,6 +34,8 @@
 
 #define BUFFER_LEN 1024
 
+using namespace std;
+
 static void create_file (const char * fname, int format)
 {	static short buffer [BUFFER_LEN] ;
 
@@ -49,7 +51,7 @@ static void create_file (const char * fname, int format)
 
 	file.write (buffer, BUFFER_LEN) ;
 
-	cout (".\n") ;
+	cout << ".\n" ;
 } /* create_file */
 
 static void read_file (const char * fname)
@@ -65,16 +67,16 @@ static void read_file (const char * fname)
 
 	file.read (buffer, BUFFER_LEN) ;
 
-	cout (".\n") ;
+	cout << ".\n" ;
 } /* read_file */
 
 int main (void)
 {	const char * fname = "test.wav" ;
 
-	/*create_file (fname, SF_FORMAT_WAV | SF_FORMAT_PCM_16) ;*/
+	create_file (fname, SF_FORMAT_WAV | SF_FORMAT_PCM_16) ;
 
 	read_file (fname) ;
 
-	cout ("Done.\n") ;
+	cout << "Done.\n" ;
 	return 0 ;
 } /* main */
