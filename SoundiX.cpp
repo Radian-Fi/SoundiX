@@ -24,7 +24,6 @@
  * Copyright (C) 2007-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
  */
 
-
 #include <iostream>
 
 #include <cstdio>
@@ -37,7 +36,8 @@
 using namespace std;
 
 static void create_file (const char * fname, int format)
-{	static short buffer [BUFFER_LEN] ;
+{	
+	static short buffer [BUFFER_LEN] ;
 
 	SndfileHandle file ;
 	int channels = 2 ;
@@ -55,7 +55,8 @@ static void create_file (const char * fname, int format)
 } /* create_file */
 
 static void read_file (const char * fname)
-{	static short buffer [BUFFER_LEN] ;
+{	
+	static short buffer [BUFFER_LEN] ;
 
 	SndfileHandle file ;
 
@@ -71,7 +72,8 @@ static void read_file (const char * fname)
 } /* read_file */
 
 int main (void)
-{	const char * fname = "test.wav" ;
+{	
+	const char * fname = "test.wav" ;
 
 	create_file (fname, SF_FORMAT_WAV | SF_FORMAT_PCM_16) ;
 
