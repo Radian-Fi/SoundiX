@@ -11,5 +11,7 @@ For this moment is MIDI support still unavaible, only "Pseudo-MIDI" format outpu
 with its structure:
 
 t	//as timestamp
+
 v	//velocity or volume (also MIDI compatible)
+
 f	//frequency in MIDI compatible formate (dec -> byte)
