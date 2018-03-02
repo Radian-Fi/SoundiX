@@ -3,13 +3,25 @@
 
 using namespace std;
 
+char fname[260];
+
+void d2b(int data, int bit, char*fname)
+	{
+		fstream myfile(fname, sizeof fname);
+		for(int i = 0, i < bit, i+=8)
+		{
+			myfile << (char)(data-pow(2,(bit-i))+1)
+		}
+		myfile.close();
+	}
+
 int main() //start()
 {
-    char fname[260];
     cout << "Select the file path (to save MIDI file): ";
 	cin.getline(fname, sizeof fname);
 	fstream myfile(fname, ios_base::out);
-	myfile << "MThd " << 0x06 << " ";
+	myfile << "MThd";
+	d2b(6,32,fname);
 	myfile.close();
 	return 0;
 }

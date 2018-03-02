@@ -1,5 +1,5 @@
 IDIR=../include
-CXX=g++-7
+CXX=g++
 CXXFLAGS=-I$(IDIR)
 
 ODIR=obj
@@ -14,10 +14,10 @@ _OBJ = Open2.o FFT2.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(OBJ): $(ODIR)/%.o: %.cpp $(DEPS)
-	$(CXX) -std=c++17 -c -o $@ $< $(CXXFLAGS)
+	$(CXX) -std=c++11 -c -o $@ $< $(CXXFLAGS)
 
 SoundiX: $(OBJ)
-	g++ -std=c++17 -o $@ $^ $(CXXFLAGS) $(LIBS)
+	g++ -std=c++11 -o $@ $^ $(CXXFLAGS) $(LIBS)
 
 .PHONY: clean
 
