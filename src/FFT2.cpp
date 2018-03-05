@@ -139,10 +139,11 @@ int freq(double y)
 
 void compress(double res[][2], int N, double notes[127])
 {
+	int f = 0;
 	for (int i = 0; N-i > 0; ++i)
 	{
 		f = freq(res[N-i][1]);
-		if (notes[f] == void)
+		if (notes[f] == -1)
 		{
 			notes[f] = volume(res[N-i][0]);
 		}
@@ -173,6 +174,7 @@ int main()
 	complex<double> vec[MAX];
 	double result[MAX/2][2];
 	double notes[127];
+	fill(notes, notes+127, -1);
 	int i,j;
 	int m = 0;
 	int o = 0;
@@ -207,7 +209,7 @@ int main()
 		//cout << i*MAX << " to " << (i+1)*MAX-1 << "samples." << endl;
 		/*for(int j = n; j < MAX/2; ++j)
 			cout << result[j][1] << endl;*/
-		for (int j = n; j < MAX/2; ++j)
+		for (int j = 0; j < 128; ++j)
 		{
 			/*notes.push_back(vector<vector<double>>());
 			notes[i].push_back(vector<double>());
@@ -223,12 +225,12 @@ int main()
 	cout << "Computing FFT: 100%" << endl;
 	fstream myfile3("filedata.out", ios_base::in);
 	char fname[260];
-    cout << "Select the file path (to save MIDI file): ";
+	cout << "Select the file path (to save MIDI file): ";
 	cin.getline(fname, sizeof fname);
-	fstream myfile(fname, ios_base::app);
-	start(myfile,0,1,32768+256*30+2);
+	fstream myfile4(fname, ios_base::app);
+	start(myfile4,0,1,32768+256*30+2);
 	long length = 128*m*4;
-	track(myfile,length);
+	track(myfile4,length);
 	int t, tmp = 0;
 	double x, y;
 	for (int j = 0; j < m; ++j)
@@ -239,8 +241,10 @@ int main()
 			myfile3 >> t >> x;
 			if (t == tmp)	{t = 0;}
 			else			{t = 1;}
-			deltaTime(myfile,t);
-			noteOn(myfile,0,y,x);
+			deltaTime(myfile4,t);
+			noteOn(myfile4,0,y,x);
+			cout << "Working..." << endl;
+			cout.flush();
 		}
 		cout << "Writing out (to notes.out): " << (int)(j*100/o) << "%\r";
 		cout.flush();

@@ -12,7 +12,6 @@ void d2b(fstream& myfile, int data, int bit)
 			int j = (data-pow(2,(bit-i))+1);
 			if(j < 0) {myfile << (char)0;}
 			else      {myfile << (char)j;}
-			cout << j << endl;
 		}
 		//myfile.close();
 	}
