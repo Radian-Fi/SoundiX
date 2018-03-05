@@ -235,7 +235,7 @@ int main()
 	double x, y;
 	for (int j = 0; j < m; ++j)
 	{
-		for (int y = 0; y < 128; ++i)
+		for (int y = 0; y < 128; ++y)
 		{
 			tmp = t;
 			myfile3 >> t >> x;
@@ -243,7 +243,7 @@ int main()
 			else			{t = 1;}
 			deltaTime(myfile4,t);
 			noteOn(myfile4,0,y,x);
-			cout << "Working..." << endl;
+			cout << t << y << x << endl;
 			cout.flush();
 		}
 		cout << "Writing out (to notes.out): " << (int)(j*100/o) << "%\r";
