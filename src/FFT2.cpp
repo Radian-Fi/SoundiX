@@ -228,9 +228,8 @@ int main()
 	cout << "Select the file path (to save MIDI file): ";
 	cin.getline(fname, sizeof fname);
 	fstream myfile4(fname, ios_base::out);
+	fstream myfile5("notes.out", ios_base::out);
 	start(myfile4,0,1,32768+256*30+2);
-	long length = 128*m*4;
-	track(myfile4,length);
 	int t = 0;
 	double x, y;
 	double change[128] = {0};
@@ -247,21 +246,26 @@ int main()
 				change[y] = x;
 				if (x > 0)
 				{
-					deltaTime(myfile4,t);
-					noteOn(myfile4,0,y,x);
+					deltaTime(myfile5,t);
+					noteOn(myfile5,0,y,x);
 				}
 			}
 			if (x != change[y])
 			{
 				change[y] = x;
-				deltaTime(myfile4,t);
-				noteOn(myfile4,0,y,x);
+				deltaTime(myfile5,t);
+				noteOn(myfile5,0,y,x);
 			}
 			//cout << j << " " << y << " " << x << endl;
 		}
 		cout << "Writing out to " << fname << " :" << (int)(j*100/m) << "%\r";
 		cout.flush();
 	}
+	long length = getFileSize("notes.out");
+	track(myfile4,length);
+	myfile5.close();
+	fstream myfile6("notes.out", ios_base::in);
+	myfile4 << myfile6.rdbuf();
 	//myfile3.close();
 	myfile4.close();
 	cout << "Writing out to " << fname << " :" << "100%" << endl;

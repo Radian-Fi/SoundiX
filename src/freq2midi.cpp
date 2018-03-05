@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -42,6 +43,13 @@ void noteOn(fstream& myfile, int channel, int note, int velocity)
 	d2b(myfile,144+channel,8);
 	d2b(myfile,note,8);
 	d2b(myfile,velocity,8);
+}
+
+long getFileSize(string filename)
+{
+    struct stat stat_buf;
+    int rc = stat(filename.c_str(), &stat_buf);
+    return rc == 0 ? stat_buf.st_size : -1;
 }
 
 void __attribute__ ((constructor)) initLibrary(void) {
