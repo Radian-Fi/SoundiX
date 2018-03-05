@@ -19,7 +19,7 @@ int MAX;
 double volumax = numeric_limits<double>::min();
 double volumin = numeric_limits<double>::max();
 
-int log2(int N)    /*function to calculate the log2(.) of int numbers*/
+int log2(int N)    //function to calculate the log2(.) of int numbers
 {
 	int k = N, i = 0;
 	while(k) {
@@ -55,7 +55,7 @@ void order(complex<double>* f1, int N) //using the reverse order in the array
 	}
 }
 
-void transform(complex<double>* f, int N) //
+void transform(complex<double>* f, int N)
 {
 	order(f, N);    //first: reverse order
 	complex<double> *W;
@@ -126,13 +126,27 @@ double volume(double x)
 {
 	x = x-volumin;
 	x = x/(volumax-volumin)*127;
+	if (x < 1 or x > 127)	{x = 0;}
 	return x;
 }
 
 int freq(double y)
 {
 	y = round(69.0 + 12*log2(y/440));
+	if (y < 1 or x > 127)	{y = 0;}
 	return y;
+}
+
+void compress(double res[][2], int N, double notes[127])
+{
+	for (int i = 0; N-i > 0; ++i)
+	{
+		f = freq(res[N-i][1]);
+		if (notes[f] == void)
+		{
+			notes[f] = volume(res[N-i][0]);
+		}
+	}
 }
 
 void hann (complex<double>* dataIn, int N)
@@ -153,11 +167,12 @@ void FFT(complex<double>* f, int N, double d)
 
 int main()
 {
-	double d = 1; //sampeling step
+	double d = 1; //sampling step
 	decode();
 	int MAX = pow(2,floor(log2(sr)));
 	complex<double> vec[MAX];
 	double result[MAX/2][2];
+	double notes[127];
 	int i,j;
 	int m = 0;
 	int o = 0;
@@ -173,19 +188,20 @@ int main()
 	myfile.close();
 	cout << "Reading audio data: 100%" << endl;
 	fstream myfile2("filedata.out", ios_base::out);
-	for (int i = 0; floor(i*MAX/50) < num; ++i)
+	for (int i = 0; floor(i*MAX/60) < num; ++i)
         {
 		fill(vec, vec+MAX, 0);
 		for (int j = 0; j < MAX; ++j)
 		{
-			vec[j] = a[(int)floor(i*MAX/50)+j];
+			vec[j] = a[(int)floor(i*MAX/60)+j];
 		}
-		cout << "Computing FFT: " << (int)(m/(num/floor(MAX/0.5))) << "%\r";
+		cout << "Computing FFT: " << (int)(m/(num/(MAX/0.6))) << "%\r";
 		cout.flush();
 		hann(vec, MAX);
 		FFT(vec, MAX, d);
 		decomplex(vec, MAX/2, result);
 		int n = filter(result, MAX/2);
+		compress(result, MAX/2, notes);
 		vminmax(result, MAX/2);
 		//cout << "...printing the FFT for the ";
 		//cout << i*MAX << " to " << (i+1)*MAX-1 << "samples." << endl;
@@ -198,8 +214,7 @@ int main()
 			notes[i][j].push_back(result[j][0]);
 			notes[i][j].push_back(result[j][1]);*/
 			myfile2 << m << endl;
-			myfile2 << result[j][0] << endl;
-			myfile2 << result[j][1] << endl;
+			myfile2 << notes[j] << endl;
 			o+=1;
 		}
 		m+=1;
@@ -207,15 +222,26 @@ int main()
 	myfile2.close();
 	cout << "Computing FFT: 100%" << endl;
 	fstream myfile3("filedata.out", ios_base::in);
-	fstream myfile4("notes.out", ios_base::out);
-	int t;
+	char fname[260];
+    cout << "Select the file path (to save MIDI file): ";
+	cin.getline(fname, sizeof fname);
+	fstream myfile(fname, ios_base::app);
+	start(myfile,0,1,32768+256*30+2);
+	long length = 128*m*4;
+	track(myfile,length);
+	int t, tmp = 0;
 	double x, y;
-	for (int j = 0; j < o; ++j)
+	for (int j = 0; j < m; ++j)
 	{
-		myfile3 >> t >> x >> y;
-		myfile4 << t << endl;
-		myfile4 << volume(x) << endl;
-		myfile4 << freq(y) << endl;
+		for (int y = 0; y < 128; ++i)
+		{
+			tmp = t;
+			myfile3 >> t >> x;
+			if (t == tmp)	{t = 0;}
+			else			{t = 1;}
+			deltaTime(myfile,t);
+			noteOn(myfile,0,y,x);
+		}
 		cout << "Writing out (to notes.out): " << (int)(j*100/o) << "%\r";
 		cout.flush();
 	}

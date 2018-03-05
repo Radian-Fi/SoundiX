@@ -10,7 +10,7 @@ LIBS=-lsndfile
 _DEPS = lsndx.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = Open2.o FFT2.o
+_OBJ = Open2.o freq2midi.o FFT2.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(OBJ): $(ODIR)/%.o: %.cpp $(DEPS)

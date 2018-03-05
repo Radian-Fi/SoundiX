@@ -1,29 +1,48 @@
 #include <iostream>
 #include <fstream>
+#include <cmath>
 
 using namespace std;
 
-char fname[260];
-
-void d2b(int data, int bit, char*fname)
+void d2b(fstream& myfile, int data, int bit)
 	{
-		fstream myfile(fname, sizeof fname);
-		for(int i = 0, i < bit, i+=8)
+		//fstream myfile(fname, ios_base::out);
+		for(int i = 8; i < bit+8; i+=8)
 		{
-			myfile << (char)(data-pow(2,(bit-i))+1)
+			int j = (data-pow(2,(bit-i))+1);
+			if(j < 0) {myfile << (char)0;}
+			else      {myfile << (char)j;}
+			cout << j << endl;
 		}
-		myfile.close();
+		//myfile.close();
 	}
 
-int main() //start()
+int start(fstream& myfile, int format, int tracks, int division)
 {
-    cout << "Select the file path (to save MIDI file): ";
-	cin.getline(fname, sizeof fname);
-	fstream myfile(fname, ios_base::out);
 	myfile << "MThd";
-	d2b(6,32,fname);
-	myfile.close();
+	d2b(myfile,6,32);
+	d2b(myfile,format,16);
+	d2b(myfile,tracks,16);
+	d2b(myfile,division,16);
 	return 0;
+}
+
+void track(fstream& myfile, long long length)
+{
+	myfile << "MTrk";
+	d2b(myfile,length,32);
+}
+
+void deltaTime(fstream& myfile, long long time)
+{
+	d2b(myfile,time,ceil(log2(time+1)));
+}
+
+void noteOn(fstream& myfile, int channel, int note, int velocity)
+{
+	d2b(myfile,144+channel,8);
+	d2b(myfile,note,8);
+	d2b(myfile,velocity,8);
 }
 
 void __attribute__ ((constructor)) initLibrary(void) {
