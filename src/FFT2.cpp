@@ -233,17 +233,31 @@ int main()
 	track(myfile4,length);
 	int t = 0;
 	double x, y;
+	double change[128] = {0};
 	for (int j = 0; j < m; ++j)
 	{
 		for (int y = 0; y < 128; ++y)
 		{
-			//myfile3 >> t >> x;
 			x = notes[j][y];
+			//myfile3 >> t >> x;
 			if (y == 0)	{t = 1;}
 			else		{t = 0;}
-			deltaTime(myfile4,t);
-			noteOn(myfile4,0,y,x);
-			cout << j << " " << y << " " << x << endl;
+			if (j == 0)
+			{
+				change[y] = x;
+				if (x > 0)
+				{
+					deltaTime(myfile4,t);
+					noteOn(myfile4,0,y,x);
+				}
+			}
+			if (x != change[y])
+			{
+				change[y] = x;
+				deltaTime(myfile4,t);
+				noteOn(myfile4,0,y,x);
+			}
+			//cout << j << " " << y << " " << x << endl;
 		}
 		cout << "Writing out to " << fname << " :" << (int)(j*100/m) << "%\r";
 		cout.flush();
