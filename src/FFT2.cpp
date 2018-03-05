@@ -227,7 +227,7 @@ int main()
 	char fname[260];
 	cout << "Select the file path (to save MIDI file): ";
 	cin.getline(fname, sizeof fname);
-	fstream myfile4(fname, ios_base::app);
+	fstream myfile4(fname, ios_base::out);
 	start(myfile4,0,1,32768+256*30+2);
 	long length = 128*m*4;
 	track(myfile4,length);
@@ -243,15 +243,15 @@ int main()
 			else			{t = 1;}
 			deltaTime(myfile4,t);
 			noteOn(myfile4,0,y,x);
-			cout << t << y << x << endl;
+			cout << t << " " << y << " " << x << endl;
 			cout.flush();
 		}
-		cout << "Writing out (to notes.out): " << (int)(j*100/o) << "%\r";
+		cout << "Writing out to " << fname << " :" << (int)(j*100/o) << "%\r";
 		cout.flush();
 	}
 	myfile3.close();
 	myfile4.close();
-	cout << "Writing out (to notes.out): 100%" << endl;
+	cout << "Writing out to " << fname << " :" << "100%" << endl;
 	//copy(begin(notes), end(notes), ostream_iterator<double>(cout, " "));
 	cout << "Done." << endl;
 	return 0;
