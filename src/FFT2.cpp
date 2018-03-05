@@ -133,7 +133,7 @@ double volume(double x)
 int freq(double y)
 {
 	y = round(69.0 + 12*log2(y/440));
-	if (y < 1 or x > 127)	{y = 0;}
+	if (y < 1 or y > 127)	{y = 0;}
 	return y;
 }
 
