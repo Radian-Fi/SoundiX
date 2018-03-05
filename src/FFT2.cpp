@@ -229,18 +229,16 @@ int main()
 	cin.getline(fname, sizeof fname);
 	fstream myfile4(fname, ios_base::out);
 	fstream myfile5("notes.out", ios_base::out);
-	start(myfile4,0,1,32768+256*30+2);
-	int t = 0;
+	start(myfile4,0,1,15); //32768+256*30+2
+	int t, time = 0;
 	double x, y;
 	double change[128] = {0};
 	for (int j = 0; j < m; ++j)
 	{
 		for (int y = 0; y < 128; ++y)
 		{
-			x = notes[j][y];
+			x = (int)notes[j][y];
 			//myfile3 >> t >> x;
-			if (y == 0)	{t = 1;}
-			else		{t = 0;}
 			if (j == 0)
 			{
 				change[y] = x;
@@ -252,11 +250,13 @@ int main()
 			}
 			if (x != change[y])
 			{
+				t = j - time;
+				time = j;
 				change[y] = x;
 				deltaTime(myfile5,t);
 				noteOn(myfile5,0,y,x);
+				cout << t << " " << y << " " << x << endl;
 			}
-			//cout << j << " " << y << " " << x << endl;
 		}
 		cout << "Writing out to " << fname << " :" << (int)(j*100/m) << "%\r";
 		cout.flush();
