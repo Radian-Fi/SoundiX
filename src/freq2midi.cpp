@@ -13,7 +13,7 @@ void d2b(fstream& myfile, int data, int bit)
 		{
 			for(int j = 1; bit-j-i+8 >= bit-i; ++j)
 			{
-				if (pow(2,(bit-j-i+8)) < data)
+				if (pow(2,(bit-j-i+8)) <= data)
 				{
 					k = k + pow(2,(8-j));
 					data = data - pow(2,(bit-j-i+8));
@@ -47,9 +47,9 @@ void deltaTime(fstream& myfile, long long time)
 
 void noteOn(fstream& myfile, int channel, int note, int velocity)
 {
-	d2b(myfile,144+channel+1,8);
-	d2b(myfile,note+1,8);
-	d2b(myfile,velocity+1,8);
+	d2b(myfile,144+channel,8);
+	d2b(myfile,note,8);
+	d2b(myfile,velocity,8);
 }
 
 long getFileSize(string filename)
