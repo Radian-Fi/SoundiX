@@ -19,7 +19,7 @@ void d2b(fstream& myfile, int data, int bit)
 					data = data - pow(2,(bit-j-i+8));
 				}
 			}
-			myfile << (char)(k+1);
+			myfile << (char)k;
 		}
 		//myfile.close();
 	}
@@ -47,9 +47,9 @@ void deltaTime(fstream& myfile, long long time)
 
 void noteOn(fstream& myfile, int channel, int note, int velocity)
 {
-	d2b(myfile,144+channel,8);
-	d2b(myfile,note,8);
-	d2b(myfile,velocity,8);
+	d2b(myfile,144+channel+1,8);
+	d2b(myfile,note+1,8);
+	d2b(myfile,velocity+1,8);
 }
 
 long getFileSize(string filename)
