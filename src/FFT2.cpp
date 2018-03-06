@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sndfile.h>
+#include <sstream>
 #include <fstream>
 #include <lsndx.h>
 #define _USE_MATH_DEFINES
@@ -229,8 +230,10 @@ int main()
 	cin.getline(fname, sizeof fname);
 	fstream myfile4(fname, ios_base::out);
 	fstream myfile5("notes.out", ios_base::out);
-	start(myfile4,0,1,15); //32768+256*30+2
-	int t, time = 0;
+	start(myfile4,1,1,32); //32768+256*30+2 32 delta-t in one quarternote
+	int t, time, n = 0;
+	//stringstream("FF5804") >> hex >> n;
+	//myfile5 << 	(char)n;
 	double x, y;
 	double change[128] = {0};
 	for (int j = 0; j < m; ++j)
@@ -253,7 +256,7 @@ int main()
 				t = j - time;
 				time = j;
 				deltaTime(myfile5,t);
-				noteOff(myfile5,0,y,change[y]);
+				noteOff(myfile5,0,y,0);
 				change[y] = x;
 				deltaTime(myfile5,0);
 				noteOn(myfile5,0,y,x);
