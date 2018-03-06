@@ -19,7 +19,7 @@ void d2b(fstream& myfile, int data, int bit)
 					data = data - pow(2,(bit-j-i+8));
 				}
 			}
-			myfile << (char)k;
+			myfile << (char)(k+1);
 		}
 		//myfile.close();
 	}
