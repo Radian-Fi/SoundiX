@@ -279,6 +279,12 @@ int main()
 		cout << "Writing out to " << fname << " :" << (int)(j*100/m) << "%\r";
 		cout.flush();
 	}
+	char eof[eofsize] = {01, ff, 2f, 00}
+	for (int i = 0; i < eofsize; ++i)
+	{
+		stringstream(eof[i]) >> hex >> n;
+		myfile5 << 	(char)n;
+	}
 	myfile5.close();
 	long length = getFileSize("notes.out");
 	track(myfile4,length);
