@@ -252,8 +252,10 @@ int main()
 			{
 				t = j - time;
 				time = j;
-				change[y] = x;
 				deltaTime(myfile5,t);
+				noteOff(myfile5,0,y,change[y]);
+				change[y] = x;
+				deltaTime(myfile5,0);
 				noteOn(myfile5,0,y,x);
 				cout << t << " " << y << " " << x << endl;
 			}

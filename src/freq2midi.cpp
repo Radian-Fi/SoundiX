@@ -52,6 +52,13 @@ void noteOn(fstream& myfile, int channel, int note, int velocity)
 	d2b(myfile,velocity,8);
 }
 
+void noteOff(fstream& myfile, int channel, int note, int velocity)
+{
+	d2b(myfile,128+channel,8);
+	d2b(myfile,note,8);
+	d2b(myfile,velocity,8);
+}
+
 long getFileSize(string filename)
 {
     struct stat stat_buf;
