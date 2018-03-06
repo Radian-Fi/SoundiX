@@ -8,11 +8,18 @@ using namespace std;
 void d2b(fstream& myfile, int data, int bit)
 	{
 		//fstream myfile(fname, ios_base::out);
+		int k = 0;
 		for(int i = 8; i < bit+8; i+=8)
 		{
-			int j = (data-pow(2,(bit-i))+1);
-			if(j < 0) {myfile << (char)0;}
-			else      {myfile << (char)j;}
+			for(int j = 1; bit-j-i+8 >= bit-i; ++j)
+			{
+				if (pow(2,(bit-j-i+8)) < data)
+				{
+					k = k + pow(2,(8-j));
+					data = data - pow(2,(bit-j-i+8));
+				}
+			}
+			myfile << (char)k;
 		}
 		//myfile.close();
 	}
