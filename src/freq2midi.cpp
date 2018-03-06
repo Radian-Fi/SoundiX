@@ -27,7 +27,7 @@ int start(fstream& myfile, int format, int tracks, int division)
 	return 0;
 }
 
-void track(fstream& myfile, long long length)
+void track(fstream& myfile, long length)
 {
 	myfile << "MTrk";
 	d2b(myfile,length,32);
@@ -35,7 +35,7 @@ void track(fstream& myfile, long long length)
 
 void deltaTime(fstream& myfile, long long time)
 {
-	d2b(myfile,time,ceil(log2(time+1)));
+	d2b(myfile,time,floor(log2(time+2)));
 }
 
 void noteOn(fstream& myfile, int channel, int note, int velocity)

@@ -261,9 +261,9 @@ int main()
 		cout << "Writing out to " << fname << " :" << (int)(j*100/m) << "%\r";
 		cout.flush();
 	}
+	myfile5.close();
 	long length = getFileSize("notes.out");
 	track(myfile4,length);
-	myfile5.close();
 	fstream myfile6("notes.out", ios_base::in);
 	myfile4 << myfile6.rdbuf();
 	//myfile3.close();
