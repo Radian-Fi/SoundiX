@@ -257,7 +257,6 @@ int main()
 				change[y] = x;
 				deltaTime(myfile5,0);
 				noteOn(myfile5,0,y,x);
-				cout << t << " " << y << " " << x << endl;
 			}
 		}
 		cout << "Writing out to " << fname << " :" << (int)(j*100/m) << "%\r";
