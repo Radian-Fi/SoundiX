@@ -232,8 +232,22 @@ int main()
 	fstream myfile5("notes.out", ios_base::out);
 	start(myfile4,1,1,32); //32768+256*30+2 32 delta-t in one quarternote
 	int t, time, n = 0;
-	//stringstream("FF5804") >> hex >> n;
-	//myfile5 << 	(char)n;
+	int headersize = 38;
+	char header[headersize] = {
+							00, ff, 58, 04, 04, 02, 20, 06,		//time signature
+							00, ff, 59, 02, 00, 00,				//key signature
+							00, b0, 79, 00,						//reset all (controller)
+							00, c0, 00,							//program change
+							00, b0, 07, 64,						//set controller volume
+							00, 0a, 40,							//set expression / pan, 64 = center
+							00, 5b, 00,							//reverb, set to 0
+							00, 5d, 00,							//chorus, set to 0
+							00, ff, 21, 01, 00};				//midi port, set to 0
+	for (int i = 0; i < headersize; ++i)
+	{
+		stringstream(header[i]) >> hex >> n;
+		myfile5 << 	(char)n;
+	}
 	double x, y;
 	double change[128] = {0};
 	for (int j = 0; j < m; ++j)
