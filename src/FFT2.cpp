@@ -233,8 +233,7 @@ int main()
 	fstream test("test.out", ios_base::out);
 	start(myfile4,1,1,960); //32768+256*30+2 32 delta-t in one quarternote
 	int t, time, n = 0;
-	int headersize = 39;
-	cout << "working" << endl;
+	int headersize = 42;
 	string header[headersize] = {
 						"00", "ff", "58", "04", "04", "02", "20", "06",		//time signature
 						"00", "ff", "59", "02", "00", "00",				//key signature
