@@ -230,6 +230,7 @@ int main()
 	cin.getline(fname, sizeof fname);
 	fstream myfile4(fname, ios_base::out);
 	fstream myfile5("notes.out", ios_base::out);
+	fstream test("test.out", ios_base::out);
 	start(myfile4,1,1,960); //32768+256*30+2 32 delta-t in one quarternote
 	int t, time, n = 0;
 	int headersize = 39;
@@ -265,6 +266,7 @@ int main()
 					deltaTime(myfile5,t);
 					//myfile5 << (char)144;
 					noteOn(myfile5,0,y,x);
+					test << j << " : " << y << " " << x << endl;
 				}
 			}
 			if (x != change[y])
@@ -276,6 +278,7 @@ int main()
 				change[y] = x;
 				//deltaTime(myfile5,0);
 				noteOn(myfile5,0,y,x);
+				test << j << " : " << y << " " << x << endl;
 			}
 		}
 		cout << "Writing out to " << fname << " :" << (int)(j*100/m) << "%\r";
