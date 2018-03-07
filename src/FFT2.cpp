@@ -263,7 +263,7 @@ int main()
 				if (x > 0)
 				{
 					deltaTime(myfile5,t);
-					myfile5 << (char)144;
+					//myfile5 << (char)144;
 					noteOn(myfile5,0,y,x);
 				}
 			}
