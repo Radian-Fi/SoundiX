@@ -42,7 +42,19 @@ void track(fstream& myfile, long length)
 
 void deltaTime(fstream& myfile, long long time)
 {
-	d2b(myfile,time,floor(log2(time+2)));
+	if (time <= 127) {myfile << (char)time;}
+	int k;
+	int t = ceil(log2(time)/7);
+	for (int i = 0; i < t; ++i)
+	{
+		k = time;
+		time >> 7;
+		time << 7;
+		k = k - time;
+		time >> 7;
+		if (i == 0) {myfile << (char)k;}
+		else {myfile << (char)(128+k);}
+	}
 }
 
 void noteOn(fstream& myfile, int note, int velocity)
