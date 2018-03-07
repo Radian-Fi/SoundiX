@@ -264,7 +264,7 @@ int main()
 				{
 					deltaTime(myfile5,t);
 					myfile5 << (char)144;
-					noteOn(myfile5,y,x);
+					noteOn(myfile5,0,y,x);
 				}
 			}
 			if (x != change[y])
@@ -275,7 +275,7 @@ int main()
 				//noteOff(myfile5,0,y,0);
 				change[y] = x;
 				//deltaTime(myfile5,0);
-				noteOn(myfile5,y,x);
+				noteOn(myfile5,0,y,x);
 			}
 		}
 		cout << "Writing out to " << fname << " :" << (int)(j*100/m) << "%\r";
