@@ -274,7 +274,7 @@ int main()
 				deltaTime(myfile5,t);
 				//noteOff(myfile5,0,y,0);
 				change[y] = x;
-				deltaTime(myfile5,0);
+				//deltaTime(myfile5,0);
 				noteOn(myfile5,y,x);
 			}
 		}
