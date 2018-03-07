@@ -244,14 +244,18 @@ int main()
 						"00", "0a", "40",							//set expression / pan, 64 = center
 						"00", "5b", "00",							//reverb, set to 0
 						"00", "5d", "00",							//chorus, set to 0
-						"00", "ff", "21", "01", "00"};				//midi port, set to 0
+						"00", "ff", "21", "01", "00",				//midi port, set to 0
+						"00", "ff", "51"};						//plus 1/MAX*32, as time per quater note
 	for (int i = 0; i < headersize; ++i)
 	{
 		stringstream(header[i]) >> hex >> n;
 		myfile5 << (char)n;
 	}
+	d2b(myfile5,1/MAX*32,24); //time per quater note
 	double x, y;
 	double change[128] = {0};
+	deltaTime(myfile5,0); //first delta time index before note
+	d2b(myfile5,144,8); //defining row of noteOn messages on channel 1 (written as 0)
 	for (int j = 0; j < m; ++j)
 	{
 		for (int y = 0; y < 128; ++y)
@@ -263,10 +267,10 @@ int main()
 				change[y] = x;
 				if (x > 0)
 				{
-					deltaTime(myfile5,t);
+					if (j != 0 and y !=0) {deltaTime(myfile5,t);}
 					//myfile5 << (char)144;
-					noteOn(myfile5,0,y,x);
-					test << j << " : " << y << " " << x << endl;
+					noteOn(myfile5,y,x);
+					//test << j << " : " << y << " " << x << endl;
 				}
 			}
 			if (x != change[y])
@@ -277,8 +281,8 @@ int main()
 				//noteOff(myfile5,0,y,0);
 				change[y] = x;
 				//deltaTime(myfile5,0);
-				noteOn(myfile5,0,y,x);
-				test << j << " : " << y << " " << x << endl;
+				noteOn(myfile5,y,x);
+				//test << j << " : " << y << " " << x << endl;
 			}
 		}
 		cout << "Writing out to " << fname << " :" << (int)(j*100/m) << "%\r";
