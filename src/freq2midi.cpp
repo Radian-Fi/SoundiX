@@ -45,9 +45,9 @@ void deltaTime(fstream& myfile, long long time)
 	d2b(myfile,time,floor(log2(time+2)));
 }
 
-void noteOn(fstream& myfile, int channel, int note, int velocity)
+void noteOn(fstream& myfile, int note, int velocity)
 {
-	d2b(myfile,144+channel,8);
+	//d2b(myfile,144+channel,8);
 	d2b(myfile,note,8);
 	d2b(myfile,velocity,8);
 }
