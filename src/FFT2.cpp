@@ -233,13 +233,14 @@ int main()
 	fstream test("test.out", ios_base::out);
 	start(myfile4,1,1,96); //32768+256*30+2 32 delta-t in one quarternote
 	int t, time, n = 0;
-	int headersize = 46;
+	int headersize = 50;
 	string header[headersize] = {
 						"00", "ff", "58", "04", "04", "02", "18", "08",		//time signature
 						"00", "ff", "59", "02", "00", "00",				//key signature
 						"00", "b0", "79", "00",						//reset all (controller)
 						"00", "c0", "00",							//program change
 						"00", "b0", "07", "64",						//set controller volume
+						"00", "b0", "40", "40",						//set sustain (pedal)
 						"00", "0a", "40",							//set expression / pan, 64 = center
 						"00", "5b", "00",							//reverb, set to 0
 						"00", "5d", "00",							//chorus, set to 0
