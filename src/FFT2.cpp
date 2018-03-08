@@ -141,7 +141,7 @@ int freq(double y)
 void compress(double res[][2], int N, double notes[][128], int m)
 {
 	int f = 0;
-	for (int i = 0; N-i > N-1; ++i) //set to return just 1 note with highest amplitude
+	for (int i = 0; N-i > N-2; ++i) //set to return just 1 note with highest amplitude
 	{
 		f = freq(res[N-i][1]);
 		if (notes[m][f] == 0)
