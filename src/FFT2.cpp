@@ -141,7 +141,7 @@ int freq(double y)
 void compress(double res[][2], int N, double notes[][128], int m)
 {
 	int f = 0;
-	for (int i = 0; N-i > 0; ++i)
+	for (int i = 0; N-i > N-1; ++i) //set to return just 1 note with highest amplitude
 	{
 		f = freq(res[N-i][1]);
 		if (notes[m][f] == 0)
@@ -200,7 +200,7 @@ int main()
 		}
 		cout << "Computing FFT: " << (int)(i/(num/(MAX/0.6))) << "%\r";
 		cout.flush();
-		//hann(vec, MAX);
+		hann(vec, MAX);
 		FFT(vec, MAX, d);
 		decomplex(vec, ceil(MAX/2+1), result);
 		int n = filter(result, ceil(MAX/2+1));
