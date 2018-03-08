@@ -231,11 +231,11 @@ int main()
 	fstream myfile4(fname, ios_base::out);
 	fstream myfile5("notes.out", ios_base::out);
 	fstream test("test.out", ios_base::out);
-	start(myfile4,1,1,960); //32768+256*30+2 32 delta-t in one quarternote
+	start(myfile4,1,1,96); //32768+256*30+2 32 delta-t in one quarternote
 	int t, time, n = 0;
-	int headersize = 42;
+	int headersize = 44;
 	string header[headersize] = {
-						"00", "ff", "58", "04", "04", "02", "20", "06",		//time signature
+						"00", "ff", "58", "04", "04", "02", "18", "08",		//time signature
 						"00", "ff", "59", "02", "00", "00",				//key signature
 						"00", "b0", "79", "00",						//reset all (controller)
 						"00", "c0", "00",							//program change
@@ -244,13 +244,13 @@ int main()
 						"00", "5b", "00",							//reverb, set to 0
 						"00", "5d", "00",							//chorus, set to 0
 						"00", "ff", "21", "01", "00",				//midi port, set to 0
-						"00", "ff", "51"};						//plus 1/MAX*32, as time per quater note
+						"00", "ff", "51", "03"};						//plus 1/MAX*32, as time per quater note
 	for (int i = 0; i < headersize; ++i)
 	{
 		stringstream(header[i]) >> hex >> n;
 		myfile5 << (char)n;
 	}
-	d2b(myfile5,1/MAX*32,24); //time per quater note
+	d2b(myfile5,1600000,24); //time per quater note
 	double x, y;
 	double change[128] = {0};
 	deltaTime(myfile5,0); //first delta time index before note
