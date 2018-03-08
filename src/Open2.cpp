@@ -9,6 +9,23 @@ using namespace std;
 
 extern int sr, num;
 
+void info(char fname[260], int f, int sr, int c, int num_items)
+{
+	SNDFILE *sf;
+    SF_INFO info;
+    
+    sf = sf_open(fname,SFM_READ,&info);
+    if (sf == NULL)
+    {
+        printf("Failed to open the file.\n");
+        exit(-1);
+	}
+    f = info.frames;
+    sr = info.samplerate;
+    c = info.channels;
+    num_items = f*c;
+}
+
 int decode()
 {
     SNDFILE *sf;

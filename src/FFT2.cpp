@@ -169,8 +169,12 @@ void FFT(complex<double>* f, int N, double d)
 
 int main()
 {
+	char fname[260];
+    cout << "Select the file path: ";
+    cin.getline(fname, sizeof fname);
+    int f, sr, c, num_items;
+	info(f, sr, c, num_items);
 	double d = 1; //sampling step
-	decode();
 	int MAX = pow(2,floor(log2(sr)));
 	complex<double> vec[MAX] = {0};
 	double result[(int)ceil(MAX/2)][2] = {{0}};
@@ -180,8 +184,9 @@ int main()
 	int m = 0;
 	//int o = 0;
 	complex<double> a[num] = {0};
+	decode(a);
 	//vector<vector<vector<double>>> notes;
-	fstream myfile("filedata.out", ios_base::in);
+	/*fstream myfile("filedata.out", ios_base::in);
 	for (int j = 1; j < num+1; ++j)
 	{
 		myfile >> a[j];
@@ -189,7 +194,7 @@ int main()
 		cout.flush();
 	}
 	myfile.close();
-	cout << "Reading audio data: 100%" << endl;
+	cout << "Reading audio data: 100%" << endl;*/
 	//fstream myfile2("filedata.out", ios_base::out);
 	for (int i = 0; floor(i*MAX/60) < num; ++i)
         {
