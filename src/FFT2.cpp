@@ -126,8 +126,8 @@ void vminmax(double res[][2], int N)
 double volume(double x)
 {
 	x = x-volumin;
-	x = x/(volumax-volumin)*127;
-	if (x < 1 or x > 127)	{x = 0;}
+	x = round(x/(volumax-volumin)*8)*15.875; //volume values divided in steps (9 volume steps)
+	if (x < 63 or x > 127)	{x = 0;} //filtering by volume, volume under 63 ignored
 	return x;
 }
 
