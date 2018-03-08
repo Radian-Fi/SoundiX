@@ -200,7 +200,7 @@ int main()
 		}
 		cout << "Computing FFT: " << (int)(i/(num/(MAX/0.6))) << "%\r";
 		cout.flush();
-		hann(vec, MAX);
+		//hann(vec, MAX);
 		FFT(vec, MAX, d);
 		decomplex(vec, ceil(MAX/2+1), result);
 		int n = filter(result, ceil(MAX/2+1));
