@@ -71,7 +71,7 @@ int decode()
         fprintf(out,"\n");
         }
     fclose(out);
-    return 0;
+    return num;
 }
 
 /*int main() {
