@@ -152,6 +152,21 @@ void compress(double res[][2], int N, double notes[][128], int m)
 	}
 }
 
+void stereo2mono(complex<double> a, int c)
+{
+	int k = 0;
+	for (int i = 0; i < c; i = i+c)
+	{
+		complex<double> tmp = 0;
+		for (int j = 0; j < tmp; ++j)
+		{
+			tmp = tmp + a[i+j];
+		}
+		a[k] = tmp/c;
+		k+=1;
+	}
+}
+
 void hann (complex<double>* dataIn, int N)
 {
 	for (int i = 0; i < N; i++)
@@ -173,16 +188,30 @@ int main()
 	char fname[260];
     cout << "Select the file path: ";
     cin.getline(fname, sizeof fname);
+    int f, sr, c, num_items, num;
     if (fname[sizeof fname-1] == '3' and fname[sizeof fname-2] == 'p' and fname[sizeof fname-3] == 'm' and fname[sizeof fname-4] == '.')
 	{
+		//infoMp3(fname, f, sr, c, num_items);
+		complex<double> a[num_items] = {0};
 		decodeMp3(fname,a);
 	}
     else
 	{
-    int f, sr, c, num_items;
-	info(fname, f, sr, c, num_items);
-	complex<double> a[num_items] = {0};
-	decode(fname, a);
+		info(fname, f, sr, c, num_items);
+		complex<double> a[num_items] = {0};
+		int f, sr, c, num_items;
+		decode(fname, a);
+	}
+	if (c > 1)
+	{
+		char option[5];
+		cout << "Do you want to convert to mono?[Yes/No]"
+		cin.getline(option, sizeof option);
+		if (option.front() == 'y' or option.front() == 'Y')
+		{
+			stereo2mono(a, num_items*c, c);
+			num_items = num_items/c;
+		}
 	}
 	double d = 1; //sampling step
 	int MAX = pow(2,floor(log2(sr)));

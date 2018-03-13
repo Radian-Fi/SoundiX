@@ -7,8 +7,6 @@
 
 using namespace std;
 
-extern int sr, num;
-
 void info(char fname[260], int f, int sr, int c, int num_items)
 {
 	SNDFILE *sf;
