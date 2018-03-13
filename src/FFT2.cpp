@@ -15,8 +15,6 @@
 using namespace std;
 
 //int BUFFER_LEN; //number of samples (in window)
-int sr, num;
-int MAX;
 double volumax = numeric_limits<double>::min();
 double volumin = numeric_limits<double>::max();
 
@@ -141,13 +139,16 @@ int freq(double y)
 void compress(double res[][2], int N, double notes[][128], int m)
 {
 	int f = 0;
-	for (int i = 0; N-i > N-2; ++i) //set to return just 1 note with highest amplitude
+	int n = 0;
+	for (int i = 0; N-i > 0; ++i) //set to N-i > N-1
 	{
 		f = freq(res[N-i][1]);
 		if (notes[m][f] == 0)
 		{
 			notes[m][f] = volume(res[N-i][0]);
+			n+=1
 		}
+		if (n >= 127) {break;} //also could be if (n == 127)
 	}
 }
 
@@ -173,7 +174,9 @@ int main()
     cout << "Select the file path: ";
     cin.getline(fname, sizeof fname);
     int f, sr, c, num_items;
-	info(f, sr, c, num_items);
+	info(fname, f, sr, c, num_items);
+	int num = decode(a);
+	complex<double> a[num] = {0};
 	double d = 1; //sampling step
 	int MAX = pow(2,floor(log2(sr)));
 	complex<double> vec[MAX] = {0};
@@ -183,8 +186,6 @@ int main()
 	int i,j;
 	int m = 0;
 	//int o = 0;
-	complex<double> a[num] = {0};
-	decode(a);
 	//vector<vector<vector<double>>> notes;
 	/*fstream myfile("filedata.out", ios_base::in);
 	for (int j = 1; j < num+1; ++j)
