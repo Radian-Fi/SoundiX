@@ -173,10 +173,17 @@ int main()
 	char fname[260];
     cout << "Select the file path: ";
     cin.getline(fname, sizeof fname);
+    if (fname[sizeof fname-1] == '3' and fname[sizeof fname-2] == 'p' and fname[sizeof fname-3] == 'm' and fname[sizeof fname-4] == '.')
+	{
+		decodeMp3(fname,a);
+	}
+    else
+	{
     int f, sr, c, num_items;
 	info(fname, f, sr, c, num_items);
 	complex<double> a[num_items] = {0};
 	decode(fname, a);
+	}
 	double d = 1; //sampling step
 	int MAX = pow(2,floor(log2(sr)));
 	complex<double> vec[MAX] = {0};
