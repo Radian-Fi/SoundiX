@@ -175,36 +175,36 @@ int main()
     cin.getline(fname, sizeof fname);
     int f, sr, c, num_items;
 	info(fname, f, sr, c, num_items);
-	int num = decode(a);
-	complex<double> a[num] = {0};
+	complex<double> a[num_items] = {0};
+	decode(fname, a);
 	double d = 1; //sampling step
 	int MAX = pow(2,floor(log2(sr)));
 	complex<double> vec[MAX] = {0};
 	double result[(int)ceil(MAX/2)][2] = {{0}};
 	//double notebuf[128];
-	double notes[(int)ceil(num/(MAX/60))][128] = {{0}};
+	double notes[(int)ceil(num_items/(MAX/60))][128] = {{0}};
 	int i,j;
 	int m = 0;
 	//int o = 0;
 	//vector<vector<vector<double>>> notes;
 	/*fstream myfile("filedata.out", ios_base::in);
-	for (int j = 1; j < num+1; ++j)
+	for (int j = 1; j < num_items+1; ++j)
 	{
 		myfile >> a[j];
-		cout << "Reading audio data: " << (int)(j*100/num) << "%\r";
+		cout << "Reading audio data: " << (int)(j*100/num_items) << "%\r";
 		cout.flush();
 	}
 	myfile.close();
 	cout << "Reading audio data: 100%" << endl;*/
 	//fstream myfile2("filedata.out", ios_base::out);
-	for (int i = 0; floor(i*MAX/60) < num; ++i)
+	for (int i = 0; floor(i*MAX/60) < num_items; ++i)
         {
 		fill(vec, vec+MAX, 0);
 		for (int j = 0; j < MAX; ++j)
 		{
 			vec[j] = a[(int)floor(i*MAX/60)+j];
 		}
-		cout << "Computing FFT: " << (int)(i/(num/(MAX/0.6))) << "%\r";
+		cout << "Computing FFT: " << (int)(i/(num_items/(MAX/0.6))) << "%\r";
 		cout.flush();
 		hann(vec, MAX);
 		FFT(vec, MAX, d);

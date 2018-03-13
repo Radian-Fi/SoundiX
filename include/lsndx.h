@@ -2,7 +2,8 @@
 
 using namespace std;
 
-int decode(void);
+void decode(char fname[260], complex<double> a[]);
+void decodeMp3(char fname[260], complex<double> a[]);
 void d2b(fstream& myfile, int data, int bit);
 int start(fstream& myfile, int format, int tracks, int division);
 void noteOn(fstream& myfile, int note, int velocity);

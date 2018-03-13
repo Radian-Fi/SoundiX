@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <sndfile.h>
 #include <math.h>
-#include <tuple>
+#include <complex>
 
 using namespace std;
 
@@ -26,7 +26,7 @@ void info(char fname[260], int f, int sr, int c, int num_items)
     num_items = f*c;
 }
 
-void decodeMp3()
+void decodeMp3(char fname[260], complex<double> a[])
 {
     mpg123_init();
 
@@ -41,64 +41,28 @@ void decodeMp3()
     buffer_size = mpg123_outblock(mh);
     buffer = (unsigned char*)malloc(buffer_size * sizeof(unsigned char));
 
-    mpg123_open(mh, "/home/abbas/Desktop/nastaran.mp3");
+    mpg123_open(mh, fname);
     mpg123_getformat(mh, &rate, &channels, &encoding);
 
-    std::ofstream out("res.txt");
     unsigned int counter = 0;
 
-    for (int totalBtyes = 0; mpg123_read(mh, buffer, buffer_size, &done) == MPG123_OK; ) {
+    for (int totalBytes = 0; mpg123_read(mh, buffer, buffer_size, &done) == MPG123_OK; )
+    {
         short* tst = reinterpret_cast<short*>(buffer);
-        for (auto i = 0; i < buffer_size / 2; i++) {
-            out<< counter + i<<"\t"<< tst[i] << "\n";
+        for (auto i = 0; i < buffer_size / 2; i++)
+        {
+            a[totalBytes+i] = tst[i];
         }
         counter += buffer_size/2;
-        totalBtyes += done;
+        totalBytes += done;
     }
-    out.close();
     free(buffer);
     mpg123_close(mh);
     mpg123_delete(mh);
     mpg123_exit();
 }
 
-void decodeMp3()
-{
-    mpg123_init();
-
-    int err;
-    mpg123_handle *mh = mpg123_new(NULL, &err);
-    unsigned char *buffer;
-    size_t buffer_size;
-    size_t done;
-
-    int channels, encoding;
-    long rate;
-    buffer_size = mpg123_outblock(mh);
-    buffer = (unsigned char*)malloc(buffer_size * sizeof(unsigned char));
-
-    mpg123_open(mh, "/home/abbas/Desktop/nastaran.mp3");
-    mpg123_getformat(mh, &rate, &channels, &encoding);
-
-    std::ofstream out("res.txt");
-    unsigned int counter = 0;
-
-    for (int totalBtyes = 0; mpg123_read(mh, buffer, buffer_size, &done) == MPG123_OK; ) {
-        short* tst = reinterpret_cast<short*>(buffer);
-        for (auto i = 0; i < buffer_size / 2; i++) {
-            out<< counter + i<<"\t"<< tst[i] << "\n";
-        }
-        counter += buffer_size/2;
-        totalBtyes += done;
-    }
-    out.close();
-    free(buffer);
-    mpg123_close(mh);
-    mpg123_delete(mh);
-    mpg123_exit();
-}
-
-int decode()
+void decode(char fname[260], complex<double> a[])
 {
     SNDFILE *sf;
     SF_INFO info;
@@ -108,18 +72,11 @@ int decode()
     int f,c;
     int *buf;
     FILE *out;
-    char fname[260];
 
     
     /* Open the WAV file. */
     info.format = 0;
-    cout << "Select the file path: ";
-    cin.getline(fname, sizeof fname);
     sf = sf_open(fname,SFM_READ,&info);
-    if (sf == NULL) {
-        printf("Failed to open the file.\n");
-        exit(-1);
-        }
     /* Print some of the info, and figure out how much data to read. */
     f = info.frames;
     sr = info.samplerate;
@@ -135,15 +92,10 @@ int decode()
     sf_close(sf);
     printf("Read %d samples\n",num);
     /* Write the data to filedata.out. */
-    out = fopen("filedata.out","w");
-    for (int i = 0; i < num; i += 1)
-        {
-        for (int j = 0; j < 1; ++j)
-            fprintf(out,"%d ",buf[i+j]);
-        fprintf(out,"\n");
-        }
-    fclose(out);
-    return num;
+	for (int i = 0; i < num; i += 1)
+    {
+		for (int j = 0; j < 1; ++j) {a[i+j] = buf[i+j]);} //using just first channel
+    }
 }
 
 /*int main() {
