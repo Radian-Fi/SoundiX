@@ -5,7 +5,7 @@ External library named 'libsndfile' is needed.
 For instalation use: sudo apt-get install libsndfile1 libsndfile1-dev
 
 For compilation of newest release use:
-make -f Makefile2 SoundiX
+make all
 
 For this moment is MIDI support still unavaible, only "Pseudo-MIDI" format output notes.out 
 with its structure:
