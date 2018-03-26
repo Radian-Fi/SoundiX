@@ -11,7 +11,9 @@
 #include <limits>
 #include <vector>
 #include <iterator>
+#include "cpptk.h"
 
+using namespace Tk;
 using namespace std;
 
 //int BUFFER_LEN; //number of samples (in window)
@@ -97,6 +99,16 @@ int compare(const void* a, const void* b) {
 	else return 0;
 }
 
+/*
+void resonance(double res[][2], int N)
+{
+	for (int i = 0; N-i > 0; ++i)
+	{
+		res[i][0]
+	}
+}
+*/
+
 int filter(double res[][2], int N)
 {
 	qsort(res, N, 2*sizeof(double), compare);
@@ -121,11 +133,12 @@ void vminmax(double res[][2], int N)
 		volumax = res[N-1][0];
 }
 
-double volume(double x)
+double volume(double x, int steps, int limit)
 {
 	x = x-volumin;
-	x = round(x/(volumax-volumin)*8)*15.875; //volume values divided in steps (9 volume steps)
-	if (x < 63 or x > 127)	{x = 0;} //filtering by volume, volume under 63 ignored
+	float multiplier = 127/steps;
+	x = round(x/(volumax-volumin)*steps)*multiplier; //volume values divided in steps (127 volume steps) 8)
+	if (x < limit or x > 127)	{x = 0;} //filtering by volume, volume under 'limit' ignored
 	return x;
 }
 
@@ -136,7 +149,7 @@ int freq(double y)
 	return y;
 }
 
-void compress(double res[][2], int N, double notes[][128], int m)
+void compress(double res[][2], int N, double notes[][128], int m, int steps, int limit)
 {
 	int f = 0;
 	int n = 0;
@@ -145,7 +158,7 @@ void compress(double res[][2], int N, double notes[][128], int m)
 		f = freq(res[N-i][1]);
 		if (notes[m][f] == 0)
 		{
-			notes[m][f] = volume(res[N-i][0]);
+			notes[m][f] = volume(res[N-i][0], steps, limit);
 			n+=1
 		}
 		if (n >= 127) {break;} //also could be if (n == 127)
@@ -183,13 +196,14 @@ void FFT(complex<double>* f, int N, double d)
 	f[i] *= d; //multiplying by step
 }
 
-int main()
+int main(int, char *argv[])
 {
 	char fname[260];
     cout << "Select the file path: ";
     cin.getline(fname, sizeof fname);
     int f, sr, c, num_items, num;
-    if (fname[sizeof fname-1] == '3' and fname[sizeof fname-2] == 'p' and fname[sizeof fname-3] == 'm' and fname[sizeof fname-4] == '.')
+    /*
+	if (fname[sizeof fname-1] == '3' and fname[sizeof fname-2] == 'p' and fname[sizeof fname-3] == 'm' and fname[sizeof fname-4] == '.')
 	{
 		//infoMp3(fname, f, sr, c, num_items);
 		complex<double> a[num_items] = {0};
@@ -202,16 +216,23 @@ int main()
 		int f, sr, c, num_items;
 		decode(fname, a);
 	}
+	*/
+	info(fname, f, sr, c, num_items);
+	complex<double> a[num_items] = {0};
+	int f, sr, c, num_items;
+	decode(fname, a);
 	if (c > 1)
 	{
-		char option[5];
+		/*char option[5];
 		cout << "Do you want to convert to mono?[Yes/No]"
 		cin.getline(option, sizeof option);
 		if (option.front() == 'y' or option.front() == 'Y')
 		{
 			stereo2mono(a, num_items*c, c);
 			num_items = num_items/c;
-		}
+		}*/
+		stereo2mono(a, num_items*c, c);
+		num_items = num_items/c;
 	}
 	double d = 1; //sampling step
 	int MAX = pow(2,floor(log2(sr)));
@@ -247,7 +268,9 @@ int main()
 		decomplex(vec, ceil(MAX/2+1), result);
 		int n = filter(result, ceil(MAX/2+1));
 		vminmax(result, ceil(MAX/2+1));
-		compress(result, ceil(MAX/2+1), notes, i);
+		int steps = 127;
+		int limit = 0;
+		compress(result, ceil(MAX/2+1), notes, i, steps, limit);
 		//cout << "...printing the FFT for the ";
 		//cout << i*MAX << " to " << (i+1)*MAX-1 << "samples." << endl;
 		/*for(int j = n; j < ceil(MAX/2+1); ++j)
@@ -263,7 +286,24 @@ int main()
 			o+=1;
 		}*/
 		m = i;
-        }
+		}
+    try
+	{
+		init(argv[0]);
+
+		pack(canvas(".c") -background("grey"))
+			-expand(true) -fill(both);
+			
+		drawSpectrogram(notes, m); //m = num_items(-1)
+		
+		//button(".b") -text("Spectrogram") -command(change);
+
+		runEventLoop();
+	}
+	catch (exception const &e)
+	{
+		cerr << "Error: " << e.what() << '\n';
+	}
 	//myfile2.close();
 	cout << "Computing FFT: 100%" << endl;
 	//fstream myfile3("filedata.out", ios_base::in);
@@ -280,7 +320,7 @@ int main()
 						"00", "ff", "58", "04", "04", "02", "18", "08",		//time signature
 						"00", "ff", "59", "02", "00", "00",				//key signature
 						"00", "b0", "79", "00",						//reset all (controller)
-						"00", "c0", "00",							//program change
+						"00", "c0", "4f",							//program change (instrument)
 						"00", "b0", "07", "64",						//set controller volume
 						"00", "b0", "40", "40",						//set sustain (pedal)
 						"00", "0a", "40",							//set expression / pan, 64 = center

@@ -24,6 +24,7 @@ void info(char fname[260], int f, int sr, int c, int num_items)
     num_items = f*c;
 }
 
+/*
 void decodeMp3(char fname[260], complex<double> a[])
 {
     mpg123_init();
@@ -59,6 +60,7 @@ void decodeMp3(char fname[260], complex<double> a[])
     mpg123_delete(mh);
     mpg123_exit();
 }
+*/
 
 void decode(char fname[260], complex<double> a[])
 {
