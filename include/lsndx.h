@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void info(char fname[260], int f, int sr, int c, int num_items);
+void info(char fname[260], int* f, int* sr, int* c, int* num_items);
 void decode(char fname[260], complex<double> a[]);
 //void decodeMp3(char fname[260], complex<double> a[]);
 

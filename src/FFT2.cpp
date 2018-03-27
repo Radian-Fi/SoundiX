@@ -14,7 +14,6 @@
 
 using namespace std;
 
-//int BUFFER_LEN; //number of samples (in window)
 double volumax = numeric_limits<double>::min();
 double volumin = numeric_limits<double>::max();
 
@@ -79,7 +78,7 @@ void transform(complex<double>* f, int N)
 	}
 }
 
-void decomplex(complex<double>* f, int N, double result[][2])
+void decomplex(complex<double>* f, int N, double result[][2], int sr)
 {
 	double df = (double) sr / (N*2);
 	for(int i = 0; i < N; i++)
@@ -97,30 +96,10 @@ int compare(const void* a, const void* b) {
 	else return 0;
 }
 
-/*
-void resonance(double res[][2], int N)
-{
-	for (int i = 0; N-i > 0; ++i)
-	{
-		res[i][0]
-	}
-}
-*/
-
 int filter(double res[][2], int N)
 {
 	qsort(res, N, 2*sizeof(double), compare);
-	double last = numeric_limits<double>::max();
-	int index = 0;
-	for (int i = 0; i < N; ++i)
-	{
-		if (res[i][1] < last) //also could be if (res[i][1] = 0)
-		{
-			last = res[i][1];
-			index = i;
-		}
-	}
-	return index;
+	return 0;
 }
 
 void vminmax(double res[][2], int N)
@@ -135,8 +114,13 @@ double volume(double x, int steps, int limit)
 {
 	x = x-volumin;
 	float multiplier = 127/steps;
-	x = round(x/(volumax-volumin)*steps)*multiplier; //volume values divided in steps (127 volume steps) 8)
-	if (x < limit or x > 127)	{x = 0;} //filtering by volume, volume under 'limit' ignored
+	if (x*127./(volumax-volumin) < limit){ //filtering by volume, volume under 'limit' ignored
+		x = 0;
+	}
+	else {
+		x = 127;
+		//x = round(x/(volumax-volumin)*steps)*multiplier; //volume values divided in steps (127 volume steps) 8)
+	}
 	return x;
 }
 
@@ -147,34 +131,25 @@ int freq(double y)
 	return y;
 }
 
-void compress(double res[][2], int N, double notes[][128], int m, int steps, int limit)
+void compress(double res[][2], int N, double notes[][128], int m, int steps, int limit,
+              int maxSimultaneousNotes)
 {
 	int f = 0;
 	int n = 0;
 	for (int i = 0; N-i > 0; ++i) //set to N-i > N-1
 	{
 		f = freq(res[N-i][1]);
+		if (f == 0) { //ignore the frequency 0 Hz
+			continue;
+		}
 		if (notes[m][f] == 0)
 		{
 			notes[m][f] = volume(res[N-i][0], steps, limit);
-			n+=1
+			//cout << "res[N-i][0] " << res[N-i][0] << endl;
+			//cout << "notes[" << m << "]["<<f<<" set to " <<notes[m][f]<<endl; 
+			n+=1;
 		}
-		if (n >= 127) {break;} //also could be if (n == 127)
-	}
-}
-
-void stereo2mono(complex<double> a, int c)
-{
-	int k = 0;
-	for (int i = 0; i < c; i = i+c)
-	{
-		complex<double> tmp = 0;
-		for (int j = 0; j < tmp; ++j)
-		{
-			tmp = tmp + a[i+j];
-		}
-		a[k] = tmp/c;
-		k+=1;
+		if (n >= maxSimultaneousNotes) {break;} //also could be if (n == 127)
 	}
 }
 
@@ -182,8 +157,8 @@ void hann (complex<double>* dataIn, int N)
 {
 	for (int i = 0; i < N; i++)
 	{
-	double multiplier = 0.5 * (1 - cos((2*M_PIl*i)/(N-1)));
-	dataIn[i] = multiplier * dataIn[i];
+		double multiplier = 0.5 * (1 - cos((2*M_PIl*i)/(N-1)));
+		dataIn[i] = multiplier * dataIn[i];
 	}
 }
 
@@ -200,58 +175,25 @@ int main(int, char *argv[])
     cout << "Select the file path: ";
     cin.getline(fname, sizeof fname);
     int f, sr, c, num_items, num;
-    /*
-	if (fname[sizeof fname-1] == '3' and fname[sizeof fname-2] == 'p' and fname[sizeof fname-3] == 'm' and fname[sizeof fname-4] == '.')
-	{
-		//infoMp3(fname, f, sr, c, num_items);
-		complex<double> a[num_items] = {0};
-		decodeMp3(fname,a);
+    
+	info(fname, &f, &sr, &c, &num_items);
+	cout << num_items << endl;
+	complex<double> a[num_items];
+	for  (int i = 0; i < num_items; i++){
+		a[i] = (double)0.;
 	}
-    else
-	{
-		info(fname, f, sr, c, num_items);
-		complex<double> a[num_items] = {0};
-		int f, sr, c, num_items;
-		decode(fname, a);
-	}
-	*/
-	info(fname, f, sr, c, num_items);
-	complex<double> a[num_items] = {0};
 	decode(fname, a);
-	if (c > 1)
-	{
-		/*char option[5];
-		cout << "Do you want to convert to mono?[Yes/No]"
-		cin.getline(option, sizeof option);
-		if (option.front() == 'y' or option.front() == 'Y')
-		{
-			stereo2mono(a, num_items*c, c);
-			num_items = num_items/c;
-		}*/
-		stereo2mono(a, num_items*c, c);
-		num_items = num_items/c;
-	}
+	
 	double d = 1; //sampling step
 	int MAX = pow(2,floor(log2(sr)));
 	complex<double> vec[MAX] = {0};
 	double result[(int)ceil(MAX/2)][2] = {{0}};
-	//double notebuf[128];
+	
 	double notes[(int)ceil(num_items/(MAX/60))][128] = {{0}};
 	int i,j;
 	int m = 0;
-	//int o = 0;
-	//vector<vector<vector<double>>> notes;
-	/*fstream myfile("filedata.out", ios_base::in);
-	for (int j = 1; j < num_items+1; ++j)
-	{
-		myfile >> a[j];
-		cout << "Reading audio data: " << (int)(j*100/num_items) << "%\r";
-		cout.flush();
-	}
-	myfile.close();
-	cout << "Reading audio data: 100%" << endl;*/
-	//fstream myfile2("filedata.out", ios_base::out);
-	for (int i = 0; floor(i*MAX/60) < num_items; ++i)
+	
+	for (int i = 0; floor(i*MAX/60) < num_items - MAX; ++i)
         {
 		fill(vec, vec+MAX, 0);
 		for (int j = 0; j < MAX; ++j)
@@ -262,40 +204,26 @@ int main(int, char *argv[])
 		cout.flush();
 		hann(vec, MAX);
 		FFT(vec, MAX, d);
-		decomplex(vec, ceil(MAX/2+1), result);
-		int n = filter(result, ceil(MAX/2+1));
+		decomplex(vec, ceil(MAX/2+1), result, sr);
+		filter(result, ceil(MAX/2+1));
 		vminmax(result, ceil(MAX/2+1));
-		int steps = 127;
-		int limit = 0;
-		compress(result, ceil(MAX/2+1), notes, i, steps, limit);
-		//cout << "...printing the FFT for the ";
-		//cout << i*MAX << " to " << (i+1)*MAX-1 << "samples." << endl;
-		/*for(int j = n; j < ceil(MAX/2+1); ++j)
-			cout << result[j][1] << endl;*/
-		/*for (int j = 0; j < 128; ++j)
-		{
-			notes.push_back(vector<vector<double>>());
-			notes[i].push_back(vector<double>());
-			notes[i][j].push_back(result[j][0]);
-			notes[i][j].push_back(result[j][1]);
-			myfile2 << i << endl;
-			myfile2 << notes[j] << endl;
-			o+=1;
-		}*/
+		int steps = 1;
+		int limit = 20;
+		int maxSimultaneousNotes = 1;
+		compress(result, ceil(MAX/2+1), notes, i, steps, limit, maxSimultaneousNotes);
 		m = i;
 		}
-	//myfile2.close();
 	cout << "Computing FFT: 100%" << endl;
-	//fstream myfile3("filedata.out", ios_base::in);
 	char filename[260];
 	cout << "Select the file path (to save MIDI file): ";
 	cin.getline(filename, sizeof filename);
-	fstream myfile4(fname, ios_base::out);
-	fstream myfile5("notes.out", ios_base::out);
+	fstream outFile(filename, ios_base::out);
+	fstream tmpFile("notes.out", ios_base::out);
 	fstream test("test.out", ios_base::out);
-	start(myfile4,1,1,96); //32768+256*30+2 32 delta-t in one quarternote
-	int t, time, n = 0;
+	start(outFile,1,1,96); //32768+256*30+2 32 delta-t in one quarternote
+	int duration, lastChange = 0;
 	int headersize = 50;
+	int hexCode;
 	string header[headersize] = {
 						"00", "ff", "58", "04", "04", "02", "18", "08",		//time signature
 						"00", "ff", "59", "02", "00", "00",				//key signature
@@ -310,61 +238,60 @@ int main(int, char *argv[])
 						"00", "ff", "51", "03", "18", "6a", "00"};						//plus 1/MAX*32, as time per quater note
 	for (int i = 0; i < headersize; ++i)
 	{
-		stringstream(header[i]) >> hex >> n;
-		myfile5 << (char)n;
+		stringstream(header[i]) >> hex >> hexCode;
+		tmpFile << (char)hexCode;
 	}
-	//d2b(myfile5,1600000,24); //time per quater note
-	double x, y;
-	double change[128] = {0};
-	deltaTime(myfile5,0); //first delta time index before note
-	d2b(myfile5,144,8); //defining row of noteOn messages on channel 1 (written as 0)
+	double amplitude, frequency;
+	double lastAmplitude[128] = {0};
+	deltaTime(tmpFile,0); //first delta time index before note
+	d2b(tmpFile,144,8); //defining row of noteOn messages on channel 1 (written as 0)
 	for (int j = 0; j < m; ++j)
 	{
-		for (int y = 0; y < 128; ++y)
+		for (int frequency = 0; frequency < 128; ++frequency)
 		{
-			x = (int)notes[j][y];
-			//myfile3 >> t >> x;
+			amplitude = (int)notes[j][frequency];
 			if (j == 0)
 			{
-				change[y] = x;
-				if (x > 0)
+				lastAmplitude[frequency] = amplitude;
+				if (amplitude > 0)
 				{
-					if (j != 0 and y !=0) {deltaTime(myfile5,t);}
-					//myfile5 << (char)144;
-					noteOn(myfile5,y,x);
-					//test << j << " : " << y << " " << x << endl;
+					noteOn(tmpFile,frequency,amplitude);
 				}
 			}
-			if (x != change[y])
+			if (amplitude != lastAmplitude[frequency])
 			{
-				t = j - time;
-				time = j;
-				deltaTime(myfile5,t);
-				//noteOff(myfile5,0,y,0);
-				change[y] = x;
-				//deltaTime(myfile5,0);
-				noteOn(myfile5,y,x);
-				//test << j << " : " << y << " " << x << endl;
+				duration = j - lastChange;
+				lastChange = j;
+				//cout << "change at " << lastChange << endl; 
+				//cout << "writing delta " << duration << endl;
+				deltaTime(tmpFile,duration);
+				lastAmplitude[frequency] = amplitude;
+				noteOn(tmpFile,frequency,amplitude);
+			}
+			if (amplitude){
+				//cout << "note " << frequency << " at " << j << endl;
 			}
 		}
 		cout << "Writing out to " << fname << " :" << (int)(j*100/m) << "%\r";
 		cout.flush();
+		
 	}
-	int eofsize = 4;
-	string eof[eofsize] = {"01", "ff", "2f", "00"};
+	duration = m  - 1 - lastChange;
+	deltaTime(tmpFile,duration);
+	int eofsize = 3;
+	string eof[eofsize] = {"ff", "2f", "00"};
 	for (int i = 0; i < eofsize; ++i)
 	{
-		stringstream(eof[i]) >> hex >> n;
-		myfile5 << 	(char)n;
+		stringstream(eof[i]) >> hex >> hexCode;
+		tmpFile << 	(char)hexCode;
 	}
-	myfile5.close();
+	tmpFile.close();
 	long length = getFileSize("notes.out");
-	track(myfile4,length);
-	fstream myfile6("notes.out", ios_base::in);
-	myfile4 << myfile6.rdbuf();
-	//myfile3.close();
-	myfile4.close();
-	cout << "Writing out to " << fname << " :" << "100%" << endl;
+	track(outFile,length);
+	fstream tmpFileIn("notes.out", ios_base::in);
+	outFile << tmpFileIn.rdbuf();
+	outFile.close();
+	cout << "Writing out to " << filename << " :" << "100%" << endl;
 	//copy(begin(notes), end(notes), ostream_iterator<double>(cout, " "));
 	cout << "Done." << endl;
 	return 0;

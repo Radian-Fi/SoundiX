@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void info(char fname[260], int f, int sr, int c, int num_items)
+void info(char fname[260], int* f, int* sr, int* c, int* num_items)
 {
 	SNDFILE *sf;
     SF_INFO info;
@@ -16,12 +16,14 @@ void info(char fname[260], int f, int sr, int c, int num_items)
     if (sf == NULL)
     {
         printf("Failed to open the file.\n");
+        cout << "the file was " << fname << endl;
         exit(-1);
 	}
-    f = info.frames;
-    sr = info.samplerate;
-    c = info.channels;
-    num_items = f*c;
+    *f = info.frames;
+    *sr = info.samplerate;
+    *c = info.channels;
+    *num_items = (*f)*(*c);
+    sf_close(sf);
 }
 
 /*
