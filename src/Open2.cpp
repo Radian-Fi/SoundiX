@@ -67,11 +67,11 @@ void decode(char fname[260], complex<double> a[])
     SNDFILE *sf;
     SF_INFO info;
     //int num_channels;
-    //int sr, num;
+    int sr, num;
     int num_items;
     int f,c;
     int *buf;
-    FILE *out;
+    //FILE *out;
 
     
     /* Open the WAV file. */
@@ -94,7 +94,10 @@ void decode(char fname[260], complex<double> a[])
     /* Write the data to filedata.out. */
 	for (int i = 0; i < num; i += 1)
     {
-		for (int j = 0; j < 1; ++j) {a[i+j] = buf[i+j]);} //using just first channel
+		for (int j = 0; j < 1; ++j)
+		{
+			a[i+j] = buf[i+j]; //using just first channel
+		}
     }
 }
 

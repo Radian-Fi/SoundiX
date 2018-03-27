@@ -11,9 +11,7 @@
 #include <limits>
 #include <vector>
 #include <iterator>
-#include "cpptk.h"
 
-using namespace Tk;
 using namespace std;
 
 //int BUFFER_LEN; //number of samples (in window)
@@ -219,7 +217,6 @@ int main(int, char *argv[])
 	*/
 	info(fname, f, sr, c, num_items);
 	complex<double> a[num_items] = {0};
-	int f, sr, c, num_items;
 	decode(fname, a);
 	if (c > 1)
 	{
@@ -287,29 +284,12 @@ int main(int, char *argv[])
 		}*/
 		m = i;
 		}
-    try
-	{
-		init(argv[0]);
-
-		pack(canvas(".c") -background("grey"))
-			-expand(true) -fill(both);
-			
-		drawSpectrogram(notes, m); //m = num_items(-1)
-		
-		//button(".b") -text("Spectrogram") -command(change);
-
-		runEventLoop();
-	}
-	catch (exception const &e)
-	{
-		cerr << "Error: " << e.what() << '\n';
-	}
 	//myfile2.close();
 	cout << "Computing FFT: 100%" << endl;
 	//fstream myfile3("filedata.out", ios_base::in);
-	char fname[260];
+	char filename[260];
 	cout << "Select the file path (to save MIDI file): ";
-	cin.getline(fname, sizeof fname);
+	cin.getline(filename, sizeof filename);
 	fstream myfile4(fname, ios_base::out);
 	fstream myfile5("notes.out", ios_base::out);
 	fstream test("test.out", ios_base::out);

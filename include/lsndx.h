@@ -2,10 +2,9 @@
 
 using namespace std;
 
+void info(char fname[260], int f, int sr, int c, int num_items);
 void decode(char fname[260], complex<double> a[]);
 //void decodeMp3(char fname[260], complex<double> a[]);
-
-void drawSpectrogram(double notes[][128], int N);
 
 void d2b(fstream& myfile, int data, int bit);
 int start(fstream& myfile, int format, int tracks, int division);
