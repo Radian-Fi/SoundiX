@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <iostream>
 #include <complex>
 #include <stdio.h>
@@ -6,8 +8,6 @@
 #include <sstream>
 #include <fstream>
 #include <lsndx.h>
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include <limits>
 #include <vector>
 #include <iterator>
@@ -17,20 +17,6 @@ using namespace std;
 double volumax = numeric_limits<double>::min();
 double volumin = numeric_limits<double>::max();
 
-int log2(int N)    //function to calculate the log2(.) of int numbers
-{
-	int k = N, i = 0;
-	while(k) {
-		k >>= 1;
-		i++;
-	}
-	return i - 1;
-}
-
-int check(int n)    //checking if the number of element is a power of 2
-{
-	return n > 0 && (n & (n - 1)) == 0;
-}
 
 int reverse(int N, int n)    //calculating revers number
 {
@@ -219,7 +205,6 @@ int main(int, char *argv[])
 	cin.getline(filename, sizeof filename);
 	fstream outFile(filename, ios_base::out);
 	fstream tmpFile("notes.out", ios_base::out);
-	fstream test("test.out", ios_base::out);
 	start(outFile,1,1,96); //32768+256*30+2 32 delta-t in one quarternote
 	int duration, lastChange = 0;
 	int headersize = 50;
