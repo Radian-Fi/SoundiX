@@ -8,7 +8,6 @@
 #include <fstream>
 #include <lsndx.h>
 #include <limits>
-#include <vector>
 #include <iterator>
 
 using namespace std;
