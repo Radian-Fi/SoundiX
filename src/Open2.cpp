@@ -15,7 +15,7 @@ void info(char fname[260], int* f, int* sr, int* c, int* num_items)
     sf = sf_open(fname,SFM_READ,&info);
     if (sf == NULL)
     {
-        cout << "Failed to open the file. << endl;
+        cout << "Failed to open the file." << endl;
         cout << "The file was " << fname << endl;
         exit(-1);
 	}

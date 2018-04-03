@@ -9,6 +9,9 @@
 #include <lsndx.h>
 #include <limits>
 #include <iterator>
+#include <string>
+#include <cstdlib>
+#include <pstream.h>
 
 using namespace std;
 
@@ -20,7 +23,7 @@ int reverse(int N, int n)    //calculating revers number
 {
 	  int j, p = 0;
 	  for(j = 1; j <= log2(N); j++) {
-		if(n & (1 << (log2(N) - j)))
+		if(n & (1 << (int)(log2(N) - j)))
 			p |= 1 << (j - 1);
 	  }
 	  return p;
@@ -155,6 +158,14 @@ void FFT(complex<double>* f, int N, double d)
 
 int main(int, char *argv[])
 {
+	string stack = "8192";
+	redi::ipstream proc("ulimit -s", redi::pstreams::pstdout);
+	getline(proc.out(), stack);
+
+	//stack = system("bash -c 'ulimit -s'");
+	//cin >> stack;
+	system("bash -c 'ulimit -s unlimited'");
+
 	char fname[260];
 	cout << "Select the file path: ";
 	cin.getline(fname, sizeof fname);
@@ -195,14 +206,15 @@ int main(int, char *argv[])
 	cout << "Preferences" << endl;
 	cout << endl;
 	
-	cout << "Volume steps [0-127]: " << endl;
+	cout << "Volume steps [1-127]: " << endl;
 	cin >> steps;
 	
 	cout << "Noise gate limit [0-127]: " << endl;
 	cin >> limit;
 	
-	cout << "Maximum number of simultaneous notes [0-" << maximumNotes << "]: " << endl;
+	cout << "Maximum number of simultaneous notes [1-" << pow(2, maximumNotes*8) << "]: " << endl;
 	cin >> maxSimultaneousNotes;
+	cout << endl;
 	
 	for (int i = 0; floor(i*MAX/60) < num_items - MAX; ++i)
         {
@@ -222,6 +234,8 @@ int main(int, char *argv[])
 		m = i;
 		}
 	cout << "Computing FFT: 100%" << endl;
+	cout << "FFT done." << endl;
+	cin.getline(fname, sizeof fname); //cin flush
 	char filename[260];
 	cout << "Select the file path (to save MIDI file): ";
 	cin.getline(filename, sizeof filename);
@@ -279,7 +293,7 @@ int main(int, char *argv[])
 				//cout << "note " << frequency << " at " << j << endl;
 			}
 		}
-		cout << "Writing out to " << fname << " :" << (int)(j*100/m) << "%\r";
+		cout << "Writing out to " << filename << " :" << (int)(j*100/m) << "%\r";
 		cout.flush();
 		
 	}
@@ -302,5 +316,7 @@ int main(int, char *argv[])
 	cout << "Writing out to " << filename << " :" << "100%" << endl;
 	//copy(begin(notes), end(notes), ostream_iterator<double>(cout, " "));
 	cout << "Done." << endl;
+	string ulimitStack = "bash -c 'ulimit -s "+stack+"'";
+	system(ulimitStack.c_str());
 	return 0;
 }
