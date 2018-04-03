@@ -298,6 +298,7 @@ int main(int, char *argv[])
 	fstream tmpFileIn("notes.out", ios_base::in);
 	outFile << tmpFileIn.rdbuf();
 	outFile.close();
+	remove("notes.out");
 	cout << "Writing out to " << filename << " :" << "100%" << endl;
 	//copy(begin(notes), end(notes), ostream_iterator<double>(cout, " "));
 	cout << "Done." << endl;
