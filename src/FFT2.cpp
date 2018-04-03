@@ -102,8 +102,8 @@ double volume(double x, int steps, int limit)
 		x = 0;
 	}
 	else {
-		x = 127;
-		//x = round(x/(volumax-volumin)*steps)*multiplier; //volume values divided in steps (127 volume steps) 8)
+		//x = 127;
+		x = x/(volumax-volumin)*steps*multiplier; //volume values divided in steps (127 volume steps) 8)
 	}
 	return x;
 }
@@ -156,9 +156,9 @@ void FFT(complex<double>* f, int N, double d)
 int main(int, char *argv[])
 {
 	char fname[260];
-    cout << "Select the file path: ";
-    cin.getline(fname, sizeof fname);
-    int f, sr, c, num_items, num;
+	cout << "Select the file path: ";
+	cin.getline(fname, sizeof fname);
+	int f, sr, c, num_items, num;
     
 	info(fname, &f, &sr, &c, &num_items);
 	cout << num_items << endl;
@@ -166,7 +166,16 @@ int main(int, char *argv[])
 	for  (int i = 0; i < num_items; i++){
 		a[i] = (double)0.;
 	}
+	
 	decode(fname, a);
+	
+	char option;
+	cout << "Would you like to continue? [Y/N]? ";
+	cin >> option;
+	if (toupper(option) == 'N')
+	{
+		return 0;
+	}
 	
 	double d = 1; //sampling step
 	int MAX = pow(2,floor(log2(sr)));
@@ -176,6 +185,24 @@ int main(int, char *argv[])
 	double notes[(int)ceil(num_items/(MAX/60))][128] = {{0}};
 	int i,j;
 	int m = 0;
+	
+	int steps = 1;
+	int limit = 20;
+	int maxSimultaneousNotes = 1;
+	int maximumNotes = sizeof(int);
+	
+	cout << endl;
+	cout << "Preferences" << endl;
+	cout << endl;
+	
+	cout << "Volume steps [0-127]: " << endl;
+	cin >> steps;
+	
+	cout << "Noise gate limit [0-127]: " << endl;
+	cin >> limit;
+	
+	cout << "Maximum number of simultaneous notes [0-" << maximumNotes << "]: " << endl;
+	cin >> maxSimultaneousNotes;
 	
 	for (int i = 0; floor(i*MAX/60) < num_items - MAX; ++i)
         {
@@ -191,9 +218,6 @@ int main(int, char *argv[])
 		decomplex(vec, ceil(MAX/2+1), result, sr);
 		filter(result, ceil(MAX/2+1));
 		vminmax(result, ceil(MAX/2+1));
-		int steps = 1;
-		int limit = 20;
-		int maxSimultaneousNotes = 1;
 		compress(result, ceil(MAX/2+1), notes, i, steps, limit, maxSimultaneousNotes);
 		m = i;
 		}
