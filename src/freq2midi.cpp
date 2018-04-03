@@ -7,7 +7,6 @@ using namespace std;
 
 void d2b(fstream& myfile, int data, int bit)
 	{
-		//fstream myfile(fname, ios_base::out);
 		int k = 0;
 		for(int i = 8; i < bit+8; i+=8)
 		{
@@ -21,7 +20,6 @@ void d2b(fstream& myfile, int data, int bit)
 			}
 			myfile << (char)k;
 		}
-		//myfile.close();
 	}
 
 int start(fstream& myfile, int format, int tracks, int division)
