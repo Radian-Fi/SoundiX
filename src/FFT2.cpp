@@ -65,7 +65,7 @@ void transform(complex<double>* f, int N)
 	}
 }
 
-void decomplex(complex<double>* f, int N, double result[][2], int sr)
+void decomplex(complex<double>* f, int N, double** result, int sr)
 {
 	double df = (double) sr / (N*2);
 	for(int i = 0; i < N; i++)
@@ -83,13 +83,13 @@ int compare(const void* a, const void* b) {
 	else return 0;
 }
 
-int filter(double res[][2], int N)
+int filter(double** res, int N)
 {
 	qsort(res, N, 2*sizeof(double), compare);
 	return 0;
 }
 
-void vminmax(double res[][2], int N)
+void vminmax(double** res, int N)
 {
 	if (res[0][0] < volumin)
 		volumin = res[0][0];
@@ -118,7 +118,7 @@ int freq(double y)
 	return y;
 }
 
-void compress(double res[][2], int N, double notes[][128], int m, int steps, int limit,
+void compress(double** res, int N, double** notes, int m, int steps, int limit,
               int maxSimultaneousNotes)
 {
 	int f = 0;
@@ -140,6 +140,40 @@ void compress(double res[][2], int N, double notes[][128], int m, int steps, int
 	}
 }
 
+/*
+void makeComplexArr(complex<double>* arr, int Count)
+{
+	arr = new complex<double>[Count];
+}
+
+void deleteComplexArr(complex<double>* arr)
+{
+	delete [] arr;
+}
+*/
+
+void make2Ddouble(double** arr, int rowCount, int colCount)
+{
+	arr = new double*[rowCount];
+	for(int i = 0; i < rowCount; ++i) {
+		arr[i] = new double[colCount];
+	}
+	for(int j = 0; j < rowCount; ++j)
+	{
+		for(int k = 0; k < colCount; ++k) {
+			arr[j][k] = 0;
+		}
+	}
+}
+
+void delete2Ddouble(double** arr, int rowCount)
+{
+	for(int i = 0; i < rowCount; ++i) {
+		delete [] arr[i];
+	}
+	delete [] arr;
+}
+
 void hann (complex<double>* dataIn, int N)
 {
 	for (int i = 0; i < N; i++)
@@ -158,6 +192,7 @@ void FFT(complex<double>* f, int N, double d)
 
 int main(int, char *argv[])
 {
+	/*
 	string stack = "8192";
 	redi::ipstream proc("ulimit -s", redi::pstreams::pstdout);
 	getline(proc.out(), stack);
@@ -165,6 +200,7 @@ int main(int, char *argv[])
 	//stack = system("bash -c 'ulimit -s'");
 	//cin >> stack;
 	system("bash -c 'ulimit -s unlimited'");
+	*/
 
 	char fname[260];
 	cout << "Select the file path: ";
@@ -173,7 +209,8 @@ int main(int, char *argv[])
     
 	info(fname, &f, &sr, &c, &num_items);
 	cout << num_items << endl;
-	complex<double> a[num_items];
+	complex<double>* a = new complex<double>[num_items];
+	//complex<double> a[num_items];
 	for  (int i = 0; i < num_items; i++){
 		a[i] = (double)0.;
 	}
@@ -190,10 +227,20 @@ int main(int, char *argv[])
 	
 	double d = 1; //sampling step
 	int MAX = pow(2,floor(log2(sr)));
-	complex<double> vec[MAX] = {0};
-	double result[(int)ceil(MAX/2)][2] = {{0}};
+	complex<double>* vec = new complex<double>[MAX];
+	//complex<double> vec[MAX] = {0};
+	//double** result;
+	double** result = new double*[(int)ceil(MAX/2)];
+	for(int i = 0; i < (int)ceil(MAX/2); ++i) {
+		result[i] = new double[2];
+	}
+	//make2Ddouble(result, (int)ceil(MAX/2), 2);
+	cout << result[1][1];
+	//double result[(int)ceil(MAX/2)][2] = {{0}};
 	
-	double notes[(int)ceil(num_items/(MAX/60))][128] = {{0}};
+	double** notes;
+	make2Ddouble(notes, (int)ceil(num_items/(MAX/60)), 128);
+	//double notes[(int)ceil(num_items/(MAX/60))][128] = {{0}};
 	int i,j;
 	int m = 0;
 	
@@ -233,6 +280,9 @@ int main(int, char *argv[])
 		compress(result, ceil(MAX/2+1), notes, i, steps, limit, maxSimultaneousNotes);
 		m = i;
 		}
+	delete [] a;
+	delete [] vec;
+	delete2Ddouble(result, (int)ceil(MAX/2));
 	cout << "Computing FFT: 100%" << endl;
 	cout << "FFT done." << endl;
 	cin.getline(fname, sizeof fname); //cin flush
@@ -315,8 +365,11 @@ int main(int, char *argv[])
 	remove("notes.out");
 	cout << "Writing out to " << filename << " :" << "100%" << endl;
 	//copy(begin(notes), end(notes), ostream_iterator<double>(cout, " "));
+	delete2Ddouble(notes, (int)ceil(num_items/(MAX/60)));
 	cout << "Done." << endl;
+	/*
 	string ulimitStack = "bash -c 'ulimit -s "+stack+"'";
 	system(ulimitStack.c_str());
+	*/
 	return 0;
 }
